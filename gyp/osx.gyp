@@ -4,6 +4,7 @@
     '../platform/osx/sdk/framework-osx.gypi',
     '../platform/osx/test/osxtest.gypi',
     '../platform/linux/mapboxgl-app.gypi',
+    '../qt/qmapboxgl.gypi',
   ],
 
   'conditions': [

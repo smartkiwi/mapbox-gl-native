@@ -18,7 +18,11 @@
         '../platform/default/log_stderr.cpp',
         '../platform/default/string_stdlib.cpp',
         '../platform/default/thread.cpp',
+        '../platform/default/default_file_source.cpp',
+        '../platform/default/online_file_source.cpp',
         '../platform/qt/image.cpp',
+        '../platform/qt/qfilesource_p.cpp',
+        '../platform/qt/qfilesource_p.hpp',
         '../platform/qt/qmapboxgl.cpp',
         '../platform/qt/qmapboxgl_p.hpp',
       ],
@@ -30,6 +34,7 @@
           '<@(nunicode_cflags)',
           '<@(opengl_cflags)',
           '<@(qt_cflags)',
+          '<@(rapidjson_cflags)',
           '-Wno-error'
         ],
         'ldflags': [

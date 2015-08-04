@@ -25,7 +25,7 @@ function print_opengl_flags {
 function print_qt_flags {
     mason install Qt system
 
-    CONFIG+="    'qt_cflags%': $(quote_flags $(mason cflags Qt system "QtCore QtGui QtOpenGL")),"$LN
-    CONFIG+="    'qt_ldflags%': $(quote_flags $(mason ldflags Qt system "QtCore QtGui QtOpenGL")),"$LN
+    CONFIG+="    'qt_cflags%': $(quote_flags $(mason cflags Qt system "QtCore QtGui QtOpenGL QtNetwork")),"$LN
+    CONFIG+="    'qt_ldflags%': $(quote_flags $(mason ldflags Qt system "QtCore QtGui QtOpenGL QtNetwork")),"$LN
     CONFIG+="    'qt_moc%': '${MASON_SYSROOT:=}/$(pkg-config QtCore --variable=moc_location)',"$LN
 }

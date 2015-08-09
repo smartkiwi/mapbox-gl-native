@@ -18,6 +18,9 @@
         '../platform/default/log_stderr.cpp',
         '../platform/default/string_stdlib.cpp',
         '../platform/default/thread.cpp',
+        '../platform/default/sqlite_cache.cpp',
+        '../platform/default/sqlite3.hpp',
+        '../platform/default/sqlite3.cpp',
         '../platform/default/default_file_source.cpp',
         '../platform/default/online_file_source.cpp',
         '../platform/qt/image.cpp',
@@ -25,6 +28,8 @@
         '../platform/qt/qfilesource_p.hpp',
         '../platform/qt/qmapboxgl.cpp',
         '../platform/qt/qmapboxgl_p.hpp',
+        '../platform/qt/qsqlitecache_p.cpp',
+        '../platform/qt/qsqlitecache_p.hpp',
       ],
 
       'variables': {
@@ -32,6 +37,7 @@
           '<@(boost_cflags)',
           '<@(libuv_cflags)',
           '<@(nunicode_cflags)',
+          '<@(sqlite_cflags)',
           '<@(opengl_cflags)',
           '<@(qt_cflags)',
           '<@(rapidjson_cflags)',
@@ -42,10 +48,13 @@
           '<@(nunicode_ldflags)',
           '<@(opengl_ldflags)',
           '<@(qt_ldflags)',
+          '<@(sqlite_ldflags)',
+          '<@(zlib_ldflags)',
         ],
         'libraries': [
           '<@(libuv_static_libs)',
           '<@(nunicode_static_libs)',
+          '<@(sqlite_static_libs)',
         ],
       },
 

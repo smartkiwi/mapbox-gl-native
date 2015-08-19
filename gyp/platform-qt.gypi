@@ -47,7 +47,8 @@
           '<@(opengl_cflags)',
           '<@(qt_cflags)',
           '<@(rapidjson_cflags)',
-          '-Wno-error'
+          '-Wno-error',
+          '-fPIC',
         ],
         'ldflags': [
           '<@(libuv_ldflags)',

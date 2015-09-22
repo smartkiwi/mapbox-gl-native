@@ -21,8 +21,13 @@ function print_opengl_flags {
 
 function print_qt_flags {
     mason install Qt system
-
     CONFIG+="    'qt_cflags%': $(quote_flags $(mason cflags Qt system "QtCore QtGui QtOpenGL QtNetwork QtSql")),"$LN
     CONFIG+="    'qt_ldflags%': $(quote_flags $(mason ldflags Qt system "QtCore QtGui QtOpenGL QtNetwork QtSql")),"$LN
-    CONFIG+="    'qt_moc%': '$(pkg-config QtCore --variable=moc_location)',"$LN
+
+    QT_VERSION_MAJOR=$(qmake -query QT_VERSION | cut -d. -f1)
+    if [ ${QT_VERSION_MAJOR} -gt 4 ] ; then
+        CONFIG+="    'qt_moc%': '$(pkg-config Qt${QT_VERSION_MAJOR}Core --variable=host_bins)/moc',"$LN
+    else
+        CONFIG+="    'qt_moc%': '$(pkg-config QtCore --variable=moc_location)',"$LN
+    fi
 }

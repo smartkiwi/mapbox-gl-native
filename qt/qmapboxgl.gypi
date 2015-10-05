@@ -101,6 +101,12 @@
           ],
           'destination': '<(qtpackagedir)/lib',
         },
+        {
+          'files': [
+            '../common/ca-bundle.crt',
+          ],
+          'destination': '<(qtpackagedir)/bin',
+        },
       ],
     },
     {
@@ -119,6 +125,7 @@
           'inputs': [
             '<(qtpackagedir)/include',
             '<(qtpackagedir)/lib',
+            '<(qtpackagedir)/bin',
           ],
           'outputs': ['<(qtpackagedir).tar.gz'],
           'action': ['tar', '-C', '<(PRODUCT_DIR)', '-czvf', '<(PRODUCT_DIR)/qmapboxgl-<(qtlibversion).tar.gz', 'qmapboxgl-<(qtlibversion)'],

@@ -6,6 +6,7 @@
 #include <mbgl/map/map.hpp>
 #include <mbgl/platform/qt/qmapboxgl.hpp>
 #include <mbgl/sprite/sprite_image.hpp>
+#include <mbgl/storage/network_status.hpp>
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/vec.hpp>
 
@@ -415,6 +416,11 @@ void QMapboxGL::render()
     d_ptr->mapObj->render();
 }
 
+void QMapboxGL::connectionEstablished()
+{
+    d_ptr->connectionEstablished();
+}
+
 QMapboxGLPrivate::QMapboxGLPrivate(QMapboxGL *q, const QMapboxGLSettings &settings)
     : QObject(q)
     , size(0, 0)
@@ -465,4 +471,9 @@ void QMapboxGLPrivate::notifyMapChange(mbgl::MapChange change)
     default:
         break;
     }
+}
+
+void QMapboxGLPrivate::connectionEstablished()
+{
+    mbgl::NetworkStatus::Reachable();
 }

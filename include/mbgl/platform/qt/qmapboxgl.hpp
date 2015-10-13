@@ -28,7 +28,7 @@ public:
     virtual ~QMapboxGL();
 
     void setAccessToken(const QString &token);
-    void setCacheDatabase(const QString &path);
+    void setCacheDatabase(const QString &path, qint64 maximumSize=-1);
 
     void cycleDebugOptions();
 

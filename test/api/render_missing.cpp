@@ -59,6 +59,8 @@ TEST(API, TEST_REQUIRES_SERVER(RenderMissingTile)) {
 #elif MBGL_HTTP_CURL
     const char* prefix = "Couldn't connect to server:";
     EXPECT_EQ(0, strncmp(prefix, message.c_str(), strlen(prefix))) << "Full message is: \"" << message << "\"";
+#elif MBGL_HTTP_QT
+    EXPECT_STREQ("Connection refused", message.c_str());
 #else
     FAIL();
 #endif

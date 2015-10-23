@@ -107,6 +107,11 @@ HTTPRequestBase* HTTPQtContext::createRequest(const Resource& resource, HTTPRequ
     return new HTTPQtRequest(this, resource, callback);
 }
 
+std::unique_ptr<HTTPContextBase> HTTPContextBase::createContext()
+{
+    return std::make_unique<HTTPQtContext>();
+}
+
 uint32_t HTTPContextBase::maximumConcurrentRequests() {
 #if QT_VERSION >= 0x050000
     return 20;

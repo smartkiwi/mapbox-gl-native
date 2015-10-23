@@ -16,9 +16,11 @@
         '../platform/default/application_root.cpp',
         '../platform/default/asset_root.cpp',
         '../platform/default/log_stderr.cpp',
+        '../platform/default/mbgl/storage/offline.cpp',
+        '../platform/default/mbgl/storage/offline_database.cpp',
+        '../platform/default/mbgl/storage/offline_download.cpp',
         '../platform/default/string_stdlib.cpp',
         '../platform/default/thread.cpp',
-        '../platform/default/sqlite_cache.cpp',
         '../platform/default/sqlite3.hpp',
         '../platform/default/sqlite3.cpp',
         '../platform/default/default_file_source.cpp',
@@ -69,6 +71,7 @@
 
       'include_dirs': [
         '../include',
+        '../platform/default',
         '../src',
       ],
 

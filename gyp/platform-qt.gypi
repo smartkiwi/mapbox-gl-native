@@ -44,6 +44,7 @@
           '<@(libuv_cflags)',
           '<@(nunicode_cflags)',
           '<@(sqlite_cflags)',
+          '<@(variant_cflags)',
           '<@(opengl_cflags)',
           '<@(qt_cflags)',
           '<@(rapidjson_cflags)',
@@ -53,6 +54,7 @@
         'ldflags': [
           '<@(libuv_ldflags)',
           '<@(nunicode_ldflags)',
+          '<@(variant_ldflags)',
           '<@(opengl_ldflags)',
           '<@(qt_ldflags)',
           '<@(sqlite_ldflags)',

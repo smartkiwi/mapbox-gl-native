@@ -13,8 +13,6 @@
 
       'sources': [
         '../include/mbgl/platform/qt/qmapboxgl.hpp',
-        '../platform/default/application_root.cpp',
-        '../platform/default/asset_root.cpp',
         '../platform/default/log_stderr.cpp',
         '../platform/default/mbgl/storage/offline.cpp',
         '../platform/default/mbgl/storage/offline_database.cpp',
@@ -25,6 +23,7 @@
         '../platform/default/sqlite3.cpp',
         '../platform/default/default_file_source.cpp',
         '../platform/default/online_file_source.cpp',
+        '../platform/qt/application_root.cpp',
         '../platform/qt/async_task.cpp',
         '../platform/qt/async_task_impl.hpp',
         '../platform/qt/image.cpp',
@@ -39,7 +38,6 @@
       'variables': {
         'cflags_cc': [
           '<@(boost_cflags)',
-          '<@(libuv_cflags)',
           '<@(nunicode_cflags)',
           '<@(sqlite_cflags)',
           '<@(variant_cflags)',
@@ -50,7 +48,6 @@
           '-fPIC',
         ],
         'ldflags': [
-          '<@(libuv_ldflags)',
           '<@(nunicode_ldflags)',
           '<@(variant_ldflags)',
           '<@(opengl_ldflags)',
@@ -59,7 +56,6 @@
           '<@(zlib_ldflags)',
         ],
         'libraries': [
-          '<@(libuv_static_libs)',
           '<@(nunicode_static_libs)',
           '<@(sqlite_static_libs)',
         ],

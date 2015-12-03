@@ -9,6 +9,7 @@
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/vec.hpp>
 
+#include <QCoreApplication>
 #include <QImage>
 #include <QString>
 #include <QStringList>
@@ -18,7 +19,7 @@
 QMapboxGLSettings::QMapboxGLSettings()
     : m_cacheMaximumSize(mbgl::util::DEFAULT_MAX_CACHE_SIZE)
     , m_cacheDatabasePath(":memory:")
-    , m_assetPath(".")
+    , m_assetPath(QCoreApplication::applicationDirPath())
 {
 }
 

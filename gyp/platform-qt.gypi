@@ -23,6 +23,7 @@
         '../platform/default/sqlite3.cpp',
         '../platform/default/default_file_source.cpp',
         '../platform/default/online_file_source.cpp',
+        '../platform/default/webp_reader.cpp',
         '../platform/qt/application_root.cpp',
         '../platform/qt/async_task.cpp',
         '../platform/qt/async_task_impl.hpp',
@@ -45,6 +46,7 @@
           '<@(opengl_cflags)',
           '<@(qt_cflags)',
           '<@(rapidjson_cflags)',
+          '<@(webp_cflags)',
           '-Wno-error',
           '-fPIC',
         ],
@@ -55,10 +57,12 @@
           '<@(qt_ldflags)',
           '<@(sqlite_ldflags)',
           '<@(zlib_ldflags)',
+          '<@(webp_ldflags)',
         ],
         'libraries': [
           '<@(nunicode_static_libs)',
           '<@(sqlite_static_libs)',
+          '<@(webp_static_libs)',
         ],
       },
 

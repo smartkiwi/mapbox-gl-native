@@ -19,6 +19,7 @@ std::string encodePNG(const PremultipliedImage& pre) {
     return std::string(array.constData(), array.size());
 }
 
+PremultipliedImage decodeJPEG(const uint8_t*, size_t);
 PremultipliedImage decodeWebP(const uint8_t*, size_t);
 
 PremultipliedImage decodeImage(const std::string& string) {
@@ -34,6 +35,14 @@ PremultipliedImage decodeImage(const std::string& string) {
         }
     }
 #endif // !defined(__ANDROID__)
+
+    // Use libjpeg-turbo rather than the built-in version of libjpeg.
+    if (size >= 2) {
+        uint16_t magic = ((data[0] << 8) | data[1]) & 0xffff;
+        if (magic == 0xFFD8) {
+            return decodeJPEG(data, size);
+        }
+    }
 
     QImage image =
         QImage::fromData(data, size)

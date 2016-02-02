@@ -12,6 +12,7 @@
       ],
 
       'sources': [
+        '../include/mbgl/platform/qt/qmapbox.hpp',
         '../include/mbgl/platform/qt/qmapboxgl.hpp',
         '../platform/default/log_stderr.cpp',
         '../platform/default/mbgl/storage/offline.cpp',

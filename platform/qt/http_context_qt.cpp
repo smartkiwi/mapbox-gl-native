@@ -10,14 +10,6 @@
 #include <QNetworkReply>
 #include <QSslConfiguration>
 
-namespace {
-// Max number of request we are sending simultaneously to
-// QNetworkAccessManager to not overload it with requests.
-// Many get canceled before we need to make the actual get().
-const int kPendingMax = 4;
-
-} // namespace
-
 namespace mbgl {
 
 HTTPQtContext::HTTPQtContext() : m_manager(new QNetworkAccessManager(this))
@@ -43,13 +35,6 @@ void HTTPQtContext::request(HTTPQtRequest* req)
 {
     QUrl url = req->requestUrl();
 
-#if QT_VERSION < 0x050000
-    if (m_pending.size() >= kPendingMax && m_pending.constFind(url) == m_pending.end()) {
-        m_requestQueue.enqueue(req);
-        return;
-    }
-#endif
-
     QPair<QNetworkReply*, QVector<HTTPQtRequest*>>& data = m_pending[url];
     QVector<HTTPQtRequest*>& requestsVector = data.second;
     requestsVector.append(req);
@@ -66,15 +51,6 @@ void HTTPQtContext::request(HTTPQtRequest* req)
 
 void HTTPQtContext::cancel(HTTPQtRequest* req)
 {
-#if QT_VERSION < 0x050000
-    int queueIndex = m_requestQueue.indexOf(req);
-
-    if (queueIndex != -1) {
-        m_requestQueue.removeAt(queueIndex);
-        return;
-    }
-#endif
-
     QUrl url = req->requestUrl();
 
     auto it = m_pending.find(url);
@@ -114,9 +90,6 @@ void HTTPQtContext::replyFinish(QNetworkReply* reply)
     auto it = m_pending.find(url);
     if (it == m_pending.end()) {
         reply->deleteLater();
-#if QT_VERSION < 0x050000
-        processQueue();
-#endif
         return;
     }
 
@@ -127,19 +100,7 @@ void HTTPQtContext::replyFinish(QNetworkReply* reply)
 
     m_pending.erase(it);
     reply->deleteLater();
-#if QT_VERSION < 0x050000
-    processQueue();
-#endif
 }
-
-#if QT_VERSION < 0x050000
-void HTTPQtContext::processQueue()
-{
-    if (!m_requestQueue.isEmpty()) {
-        request(m_requestQueue.dequeue());
-    }
-}
-#endif
 
 HTTPRequestBase* HTTPQtContext::createRequest(const Resource& resource, HTTPRequestBase::Callback callback)
 {
@@ -147,7 +108,11 @@ HTTPRequestBase* HTTPQtContext::createRequest(const Resource& resource, HTTPRequ
 }
 
 uint32_t HTTPContextBase::maximumConcurrentRequests() {
-    return 4;
+#if QT_VERSION >= 0x050000
+    return 20;
+#else
+    return 10;
+#endif
 }
 
 } // mbgl

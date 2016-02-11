@@ -37,11 +37,6 @@ public slots:
     void replyFinish(QNetworkReply* reply);
 
 private:
-#if QT_VERSION < 0x050000
-    void processQueue();
-    QQueue<HTTPQtRequest*> m_requestQueue;
-#endif
-
     QMap<QUrl, QPair<QNetworkReply*, QVector<HTTPQtRequest*>>> m_pending;
     QNetworkAccessManager *m_manager;
     QSslConfiguration m_ssl;

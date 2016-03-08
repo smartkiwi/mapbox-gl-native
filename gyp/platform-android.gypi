@@ -11,7 +11,10 @@
       ],
 
       'sources': [
+        '../platform/android/src/async_task.cpp',
         '../platform/android/src/log_android.cpp',
+        '../platform/android/src/run_loop.cpp',
+        '../platform/android/src/timer.cpp',
         '../platform/default/thread.cpp',
         '../platform/default/string_stdlib.cpp',
         '../platform/default/image.cpp',

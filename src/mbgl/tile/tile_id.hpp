@@ -1,6 +1,8 @@
 #ifndef MBGL_TILE_TILE_ID
 #define MBGL_TILE_TILE_ID
 
+#include <mbgl/util/constants.hpp>
+
 #include <cstdint>
 #include <array>
 #include <forward_list>
@@ -75,6 +77,7 @@ public:
     inline bool isChildOf(const UnwrappedTileID&) const;
     inline std::array<UnwrappedTileID, 4> children() const;
     inline OverscaledTileID overscaleTo(uint8_t z) const;
+    inline float pixelsToTileUnits(float pixelValue, float zoom) const;
 
     const int16_t wrap;
     const CanonicalTileID canonical;
@@ -241,6 +244,10 @@ std::array<UnwrappedTileID, 4> UnwrappedTileID::children() const {
 OverscaledTileID UnwrappedTileID::overscaleTo(const uint8_t overscaledZ) const {
     assert(overscaledZ >= canonical.z);
     return { overscaledZ, canonical };
+}
+
+float UnwrappedTileID::pixelsToTileUnits(const float pixelValue, const float zoom) const {
+    return pixelValue * (util::EXTENT / (util::tileSize * std::pow(2, zoom - canonical.z)));
 }
 
 } // namespace mbgl

@@ -1,4 +1,4 @@
-#include "../fixtures/util.hpp"
+#include <mbgl/test/util.hpp>
 
 #include <mbgl/algorithm/generate_clip_ids_impl.hpp>
 

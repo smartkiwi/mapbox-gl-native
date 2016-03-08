@@ -31,6 +31,8 @@
         'include/mbgl/test/fixture_log_observer.hpp',
         'src/fixture_log_observer.cpp',
 
+        'algorithm/covered_by_children.cpp',
+
         'util/assert.cpp',
         'util/async_task.cpp',
         'util/clip_ids.cpp',

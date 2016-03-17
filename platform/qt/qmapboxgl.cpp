@@ -353,6 +353,11 @@ AnnotationIDs QMapboxGL::addPointAnnotations(const PointAnnotations &pointAnnota
     return ids;
 }
 
+void QMapboxGL::updatePointAnnotation(AnnotationID id, const PointAnnotation &pointAnnotation)
+{
+    d_ptr->mapObj->updatePointAnnotation(id, fromPointAnnotation(pointAnnotation));
+}
+
 mbgl::ShapeAnnotation fromQMapboxGLShapeAnnotation(const ShapeAnnotation &shapeAnnotation) {
     const CoordinateSegments &segments = shapeAnnotation.first;
     const QString &styleLayer = shapeAnnotation.second;

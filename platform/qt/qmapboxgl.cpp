@@ -8,6 +8,7 @@
 #include <mbgl/platform/qt/qmapboxgl.hpp>
 #include <mbgl/sprite/sprite_image.hpp>
 #include <mbgl/storage/network_status.hpp>
+#include <mbgl/util/constants.hpp>
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/vec.hpp>
 
@@ -207,6 +208,33 @@ void QMapboxGL::setCoordinateZoom(const Coordinate &coordinate_, double zoom_)
 {
     d_ptr->mapObj->setLatLngZoom(
             mbgl::LatLng { coordinate_.first, coordinate_.second }, zoom_, d_ptr->margins);
+}
+
+void QMapboxGL::jumpTo(const CameraOptions& camera)
+{
+    mbgl::CameraOptions mbglCamera;
+    if (camera.center.isValid()) {
+        const Coordinate center = camera.center.value<Coordinate>();
+        mbglCamera.center = mbgl::LatLng { center.first, center.second };
+    }
+    if (camera.padding.isValid()) {
+        const QRectF padding = camera.padding.value<QRectF>();
+        mbglCamera.padding = mbgl::EdgeInsets { padding.top(), padding.left(), padding.bottom(), padding.right() };
+    }
+    if (camera.anchor.isValid()) {
+        const QPointF anchor = camera.anchor.value<QPointF>();
+        mbglCamera.anchor = mbgl::ScreenCoordinate { anchor.x(), anchor.y() };
+    }
+    if (camera.zoom.isValid()) {
+        mbglCamera.zoom = camera.zoom.value<double>();
+    }
+    if (camera.angle.isValid()) {
+        mbglCamera.angle = -camera.angle.value<double>() * mbgl::util::DEG2RAD;
+    }
+    if (camera.pitch.isValid()) {
+        mbglCamera.pitch = camera.pitch.value<double>() * mbgl::util::DEG2RAD;
+    }
+    d_ptr->mapObj->jumpTo(mbglCamera);
 }
 
 double QMapboxGL::bearing() const

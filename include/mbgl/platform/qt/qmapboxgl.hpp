@@ -169,6 +169,14 @@ public:
     void setMargins(const QMargins &margins);
     QMargins margins() const;
 
+    void addCustomLayer(const QString &id,
+        QMapbox::CustomLayerInitializeFunction,
+        QMapbox::CustomLayerRenderFunction,
+        QMapbox::CustomLayerDeinitializeFunction,
+        void* context,
+        const QVariant &before = QVariant());
+    void removeCustomLayer(const QString& id);
+
 public slots:
     void render();
     void connectionEstablished();

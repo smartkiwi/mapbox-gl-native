@@ -30,8 +30,9 @@ workflows:
             #!/bin/bash
 
             gem install jazzy --no-rdoc --no-ri
-            make ipackage-sim
-            make itest
+            brew install ios-sim
+
+            make ipackage-sim itest
         - is_debug: 'yes'
     - slack:
         title: Post to Slack

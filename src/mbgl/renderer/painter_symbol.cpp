@@ -61,18 +61,12 @@ void Painter::renderSDF(SymbolBucket &bucket,
 
     sdfShader.u_zoom = (state.getZoom() - zoomAdjust) * 10; // current zoom level
 
-    if (data.mode == MapMode::Continuous) {
-        FadeProperties f = frameHistory.getFadeProperties(frame.timePoint, util::DEFAULT_FADE_DURATION);
-        sdfShader.u_fadedist = f.fadedist * 10;
-        sdfShader.u_minfadezoom = std::floor(f.minfadezoom * 10);
-        sdfShader.u_maxfadezoom = std::floor(f.maxfadezoom * 10);
-        sdfShader.u_fadezoom = (state.getZoom() + f.bump) * 10;
-    } else { // MapMode::Still
-        sdfShader.u_fadedist = 0;
-        sdfShader.u_minfadezoom = state.getZoom() * 10;
-        sdfShader.u_maxfadezoom = state.getZoom() * 10;
-        sdfShader.u_fadezoom = state.getZoom() * 10;
-    }
+    MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE1));
+    frameHistory.bind(glObjectStore);
+    sdfShader.u_fadetexture = 1;
+
+    // TODO remove this and make sure glActiveTexture is set where a texture is bound
+    MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
 
     // The default gamma value has to be adjust for the current pixelratio so that we're not
     // drawing blurry font on retina screens.
@@ -221,13 +215,15 @@ void Painter::renderSymbol(SymbolBucket& bucket, const SymbolLayer& layer, const
 
             // adjust min/max zooms for variable font sies
             float zoomAdjust = std::log(fontSize / layout.icon.size) / std::log(2);
-
             iconShader->u_zoom = (state.getZoom() - zoomAdjust) * 10; // current zoom level
-            iconShader->u_fadedist = 0 * 10;
-            iconShader->u_minfadezoom = state.getZoom() * 10;
-            iconShader->u_maxfadezoom = state.getZoom() * 10;
-            iconShader->u_fadezoom = state.getZoom() * 10;
             iconShader->u_opacity = properties.icon.opacity;
+
+            MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE1));
+            frameHistory.bind(glObjectStore);
+            iconShader->u_fadetexture = 1;
+
+            // TODO remove this and make sure glActiveTexture is set where a texture is bound
+            MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
 
             setDepthSublayer(0);
             bucket.drawIcons(*iconShader, glObjectStore);

@@ -103,6 +103,9 @@ void Painter::render(const Style& style, const FrameData& frame_, SpriteAtlas& a
     matrix::identity(nativeMatrix);
     matrix::multiply(nativeMatrix, projMatrix, nativeMatrix);
 
+    frameHistory.record(frame.timePoint, state.getZoom(),
+            data.mode == MapMode::Continuous ? util::DEFAULT_FADE_DURATION : Milliseconds(0));
+
     // - UPLOAD PASS -------------------------------------------------------------------------------
     // Uploads all required buffers and images before we do any actual rendering.
     {
@@ -113,6 +116,7 @@ void Painter::render(const Style& style, const FrameData& frame_, SpriteAtlas& a
         spriteAtlas->upload(glObjectStore);
         lineAtlas->upload(glObjectStore);
         glyphAtlas->upload(glObjectStore);
+        frameHistory.upload(glObjectStore);
         annotationSpriteAtlas.upload(glObjectStore);
 
         for (const auto& item : order) {
@@ -153,8 +157,6 @@ void Painter::render(const Style& style, const FrameData& frame_, SpriteAtlas& a
 
         drawClippingMasks(generator.getStencils());
     }
-
-    frameHistory.record(frame.timePoint, state.getZoom());
 
     // Actually render the layers
     if (debug::renderTree) { Log::Info(Event::Render, "{"); indent++; }

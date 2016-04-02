@@ -133,7 +133,7 @@ Xcode/node: Xcode/__project__ node/xproj
 		-project ./build/binding.xcodeproj \
 		-configuration $(BUILDTYPE) \
 		-target mapbox-gl-native \
-		-jobs $(JOBS)
+		-jobs $(JOBS) | xcpretty
 
 Xcode/%: Xcode/__project__
 	@printf "$(TEXT_BOLD)$(COLOR_GREEN)* Building target $*...$(FORMAT_END)\n"
@@ -143,7 +143,7 @@ Xcode/%: Xcode/__project__
 		-project ./build/$(HOST_SLUG)/gyp/$(HOST).xcodeproj \
 		-configuration $(BUILDTYPE) \
 		-target $* \
-		-jobs $(JOBS)
+		-jobs $(JOBS) | xcpretty
 
 Ninja/%: Ninja/__project__
 	@printf "$(TEXT_BOLD)$(COLOR_GREEN)* Building target $*...$(FORMAT_END)\n"

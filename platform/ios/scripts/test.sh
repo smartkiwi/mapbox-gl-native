@@ -13,7 +13,7 @@ xcodebuild \
     -sdk iphonesimulator \
     -destination 'platform=iOS Simulator,name=iPhone 6,OS=latest' \
     -derivedDataPath ./build/ios/test \
-    build
+    build | xcpretty
 
 ios-sim start
 ios-sim launch ./build/ios/test/Build/Products/Debug-iphonesimulator/ios-test.app

@@ -37,7 +37,7 @@ xcodebuild -sdk macosx${OSX_SDK_VERSION} \
     -project ./build/osx-x86_64/gyp/osx.xcodeproj \
     -configuration ${BUILDTYPE} \
     -target osxsdk \
-    -jobs ${JOBS}
+    -jobs ${JOBS} | xcpretty
 
 TARGET_BUILD_DIR=gyp/build/${BUILDTYPE}
 INFOPLIST_PATH=Mapbox.framework/Versions/Current/Resources/Info.plist

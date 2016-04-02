@@ -16,4 +16,4 @@ xcodebuild -verbose \
     -sdk macosx${OSX_SDK_VERSION} \
     -project "${OSX_PROJ_PATH}" \
     -scheme osxsdk \
-    test
+    test | xcpretty

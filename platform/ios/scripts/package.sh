@@ -94,7 +94,7 @@ if [[ "${BUILD_FOR_DEVICE}" == true ]]; then
             -project ./build/ios-all/gyp/mbgl.xcodeproj \
             -configuration ${BUILDTYPE} \
             -target everything \
-            -jobs ${JOBS}
+            -jobs ${JOBS} | xcpretty
     fi
 
     if [[ ${BUILD_DYNAMIC} == true ]]; then
@@ -111,7 +111,7 @@ if [[ "${BUILD_FOR_DEVICE}" == true ]]; then
             -project ./build/ios-all/gyp/ios.xcodeproj \
             -configuration ${BUILDTYPE} \
             -target iossdk \
-            -jobs ${JOBS}
+            -jobs ${JOBS} | xcpretty
     fi
 fi
 
@@ -124,7 +124,7 @@ if [[ ${BUILD_STATIC} == true ]]; then
         -project ./build/ios-all/gyp/mbgl.xcodeproj \
         -configuration ${BUILDTYPE} \
         -target everything \
-        -jobs ${JOBS}
+        -jobs ${JOBS} | xcpretty
 fi
 
 if [[ ${BUILD_DYNAMIC} == true ]]; then
@@ -138,7 +138,7 @@ if [[ ${BUILD_DYNAMIC} == true ]]; then
         -project ./build/ios-all/gyp/ios.xcodeproj \
         -configuration ${BUILDTYPE} \
         -target iossdk \
-        -jobs ${JOBS}
+        -jobs ${JOBS} | xcpretty
 fi
 
 LIBS=(core.a platform-ios.a asset-fs.a http-nsurl.a)

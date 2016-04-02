@@ -22,6 +22,9 @@ void Painter::renderRaster(RasterBucket& bucket, const RasterLayer& layer, const
         rasterShader->u_contrast_factor = contrastFactor(properties.contrast);
         rasterShader->u_spin_weights = spinWeights(properties.hueRotate);
 
+        rasterShader->u_image = 0;
+        config.activeTexture = GL_TEXTURE0;
+
         config.stencilOp.reset();
         config.stencilTest = GL_TRUE;
         config.depthFunc.reset();

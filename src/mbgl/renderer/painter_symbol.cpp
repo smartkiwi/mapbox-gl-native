@@ -61,14 +61,10 @@ void Painter::renderSDF(SymbolBucket &bucket,
 
     sdfShader.u_zoom = (state.getZoom() - zoomAdjust) * 10; // current zoom level
 
-    MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE1));
+    config.activeTexture = GL_TEXTURE1;
     frameHistory.bind(glObjectStore);
     sdfShader.u_fadetexture = 1;
 
-    // TODO remove this and make sure glActiveTexture is set where a texture is bound
-    MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
-
-    // The default gamma value has to be adjust for the current pixelratio so that we're not
     // drawing blurry font on retina screens.
     const float gamma = 0.105 * sdfFontSize / fontSize / data.pixelRatio;
 
@@ -168,6 +164,7 @@ void Painter::renderSymbol(SymbolBucket& bucket, const SymbolLayer& layer, const
         SpriteAtlas* activeSpriteAtlas = layer.spriteAtlas;
         const bool iconScaled = fontScale != 1 || data.pixelRatio != activeSpriteAtlas->getPixelRatio() || bucket.iconsNeedLinear;
         const bool iconTransformed = layout.icon.rotationAlignment == RotationAlignmentType::Map || angleOffset != 0 || state.getPitch() != 0;
+        config.activeTexture = GL_TEXTURE0;
         activeSpriteAtlas->bind(sdf || state.isChanging() || iconScaled || iconTransformed, glObjectStore);
 
         if (sdf) {
@@ -218,12 +215,9 @@ void Painter::renderSymbol(SymbolBucket& bucket, const SymbolLayer& layer, const
             iconShader->u_zoom = (state.getZoom() - zoomAdjust) * 10; // current zoom level
             iconShader->u_opacity = properties.icon.opacity;
 
-            MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE1));
+            config.activeTexture = GL_TEXTURE1;
             frameHistory.bind(glObjectStore);
             iconShader->u_fadetexture = 1;
-
-            // TODO remove this and make sure glActiveTexture is set where a texture is bound
-            MBGL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
 
             setDepthSublayer(0);
             bucket.drawIcons(*iconShader, glObjectStore);
@@ -238,6 +232,7 @@ void Painter::renderSymbol(SymbolBucket& bucket, const SymbolLayer& layer, const
             config.depthTest = GL_FALSE;
         }
 
+        config.activeTexture = GL_TEXTURE0;
         glyphAtlas->bind(glObjectStore);
 
         renderSDF(bucket,

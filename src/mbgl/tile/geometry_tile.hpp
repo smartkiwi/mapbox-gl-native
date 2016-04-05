@@ -48,6 +48,7 @@ public:
     virtual ~GeometryTileLayer() = default;
     virtual std::size_t featureCount() const = 0;
     virtual util::ptr<const GeometryTileFeature> getFeature(std::size_t) const = 0;
+    virtual std::string getName() const = 0;
 };
 
 class GeometryTile : private util::noncopyable {

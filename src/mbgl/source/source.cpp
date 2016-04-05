@@ -472,6 +472,14 @@ void Source::updateTilePtrs() {
     }
 }
 
+std::unordered_map<std::string, std::vector<std::string>> Source::queryRenderedFeatures() {
+    std::unordered_map<std::string, std::vector<std::string>> result;
+    for (auto& tilePtr : tilePtrs) {
+        tilePtr->data->queryRenderedFeatures(result);
+    }
+    return result;
+}
+
 void Source::setCacheSize(size_t size) {
     cache.setSize(size);
 }

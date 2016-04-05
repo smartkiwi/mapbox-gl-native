@@ -8,6 +8,7 @@
 #include <mbgl/util/noncopyable.hpp>
 #include <mbgl/util/ptr.hpp>
 #include <mbgl/text/placement_config.hpp>
+#include <mbgl/geometry/feature_index.hpp>
 
 #include <string>
 #include <memory>
@@ -32,6 +33,8 @@ class TileParseResultBuckets {
 public:
     TileData::State state = TileData::State::invalid;
     std::unordered_map<std::string, std::unique_ptr<Bucket>> buckets;
+    std::unique_ptr<FeatureIndex> featureIndex;
+    std::unique_ptr<const GeometryTile> geometryTile;
 };
 
 using TileParseResult = mapbox::util::variant<
@@ -59,7 +62,7 @@ public:
                        PlacementConfig);
 
 private:
-    void parseLayer(const StyleLayer*, const GeometryTile&);
+    void parseLayer(const StyleLayer*);
     void insertBucket(const std::string& name, std::unique_ptr<Bucket>);
     void placeLayers(PlacementConfig);
 
@@ -75,6 +78,9 @@ private:
     bool partialParse = false;
 
     std::vector<std::unique_ptr<StyleLayer>> layers;
+
+    std::unique_ptr<FeatureIndex> featureIndex;
+    std::unique_ptr<const GeometryTile> geometryTile;
 
     // Contains buckets that we couldn't parse so far due to missing resources.
     // They will be attempted on subsequent parses.

@@ -328,6 +328,30 @@ RenderData Style::getRenderData() const {
     return result;
 }
 
+std::vector<std::string> Style::queryRenderedFeatures() {
+    std::vector<std::unordered_map<std::string, std::vector<std::string>>> sourceResults;
+    for (const auto& source : sources) {
+        sourceResults.emplace_back(std::move(source->queryRenderedFeatures()));
+    }
+
+
+    std::vector<std::string> features;
+    auto featuresInserter = std::back_inserter(features);
+
+    for (auto& layerPtr : layers) {
+        auto& layerID = layerPtr->id;
+        for (auto& sourceResult : sourceResults) {
+            auto it = sourceResult.find(layerID);
+            if (it != sourceResult.end()) {
+                auto& layerFeatures = it->second;
+                std::move(layerFeatures.begin(), layerFeatures.end(), featuresInserter);
+            }
+        }
+    }
+
+    return features;
+}
+
 void Style::setSourceTileCacheSize(size_t size) {
     for (const auto& source : sources) {
         source->setCacheSize(size);

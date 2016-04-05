@@ -174,6 +174,9 @@ public:
                         const char* before = nullptr);
     void removeCustomLayer(const std::string& id);
 
+    // Feature queries
+    std::vector<std::string> queryRenderedFeatures();
+
     // Memory
     void setSourceTileCacheSize(size_t);
     void onLowMemory();

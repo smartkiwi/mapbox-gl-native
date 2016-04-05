@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <unordered_map>
 
 namespace mbgl {
 
@@ -81,6 +82,8 @@ public:
     virtual bool parsePending(std::function<void (std::exception_ptr)>) { return true; }
     virtual void redoPlacement(PlacementConfig, const std::function<void()>&) {}
     virtual void redoPlacement(const std::function<void()>&) {}
+
+    virtual void queryRenderedFeatures(std::unordered_map<std::string, std::vector<std::string>>&) { return; }
 
     bool isReady() const {
         return isReadyState(state);

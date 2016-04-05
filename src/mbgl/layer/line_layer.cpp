@@ -3,6 +3,7 @@
 #include <mbgl/renderer/line_bucket.hpp>
 #include <mbgl/map/tile_id.hpp>
 #include <mbgl/util/get_geometries.hpp>
+#include <mbgl/geometry/feature_index.hpp>
 
 namespace mbgl {
 
@@ -79,8 +80,11 @@ std::unique_ptr<Bucket> LineLayer::createBucket(StyleBucketParameters& parameter
     bucket->layout.miterLimit.calculate(p);
     bucket->layout.roundLimit.calculate(p);
 
-    parameters.eachFilteredFeature(filter, [&] (const auto& feature) {
-        bucket->addGeometry(getGeometries(feature));
+    auto& name = bucketName();
+    parameters.eachFilteredFeature(filter, [&] (const auto& feature, std::size_t index, const std::string& layerName) {
+        auto geometries = getGeometries(feature);
+        bucket->addGeometry(geometries);
+        parameters.featureIndex.insert(geometries, index, layerName, name);
     });
 
     return std::move(bucket);

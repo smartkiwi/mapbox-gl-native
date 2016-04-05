@@ -70,6 +70,8 @@ public:
     std::forward_list<Tile *> getLoadedTiles() const;
     const std::vector<Tile*>& getTiles() const;
 
+    std::unordered_map<std::string, std::vector<std::string>> queryRenderedFeatures();
+
     void setCacheSize(size_t);
     void onLowMemory();
 

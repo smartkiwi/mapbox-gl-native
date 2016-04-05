@@ -109,6 +109,8 @@ public:
 
     RenderData getRenderData() const;
 
+    std::vector<std::string> queryRenderedFeatures();
+
     void setSourceTileCacheSize(size_t);
     void onLowMemory();
 

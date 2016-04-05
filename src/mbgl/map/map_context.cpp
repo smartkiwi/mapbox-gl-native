@@ -306,6 +306,11 @@ void MapContext::setClasses(const std::vector<std::string>& classNames, const Pr
     updateAsync(Update::Classes);
 }
 
+std::vector<std::string> MapContext::queryRenderedFeatures() {
+    if (!style) return {};
+    return style->queryRenderedFeatures();
+};
+
 void MapContext::setSourceTileCacheSize(size_t size) {
     assert(util::ThreadContext::currentlyOn(util::ThreadType::Map));
     if (size != sourceCacheSize) {

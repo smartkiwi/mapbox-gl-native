@@ -69,6 +69,8 @@ public:
     void setClasses(const std::vector<std::string>&, const PropertyTransition&);
     std::vector<std::string> getClasses() const;
 
+    std::vector<std::string> queryRenderedFeatures();
+
     void setSourceTileCacheSize(size_t size);
     void onLowMemory();
 

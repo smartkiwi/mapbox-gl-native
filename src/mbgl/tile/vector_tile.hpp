@@ -34,6 +34,7 @@ public:
 
     std::size_t featureCount() const override { return features.size(); }
     util::ptr<const GeometryTileFeature> getFeature(std::size_t) const override;
+    std::string getName() const override;
 
 private:
     friend class VectorTile;

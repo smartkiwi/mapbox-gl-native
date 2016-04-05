@@ -181,6 +181,10 @@ util::ptr<const GeometryTileFeature> VectorTileLayer::getFeature(std::size_t i) 
     return std::make_shared<VectorTileFeature>(features.at(i), *this);
 }
 
+std::string VectorTileLayer::getName() const {
+    return name;
+}
+
 VectorTileMonitor::VectorTileMonitor(const TileID& tileID_, float pixelRatio_, const std::string& urlTemplate_, FileSource& fileSource_)
     : tileID(tileID_),
       pixelRatio(pixelRatio_),

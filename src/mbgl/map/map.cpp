@@ -485,6 +485,13 @@ AnnotationIDs Map::getPointAnnotationsInBounds(const LatLngBounds& bounds) {
     return data->getAnnotationManager()->getPointAnnotationsInBounds(bounds);
 }
 
+#pragma mark - Feature query api
+
+std::vector<std::string> Map::queryRenderedFeatures() {
+    return context->invokeSync<std::vector<std::string>>(&MapContext::queryRenderedFeatures);
+}
+
+
 #pragma mark - Style API
 
 void Map::addCustomLayer(const std::string& id,

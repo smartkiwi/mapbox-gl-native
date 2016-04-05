@@ -37,12 +37,14 @@ TileWorker::~TileWorker() {
 }
 
 TileParseResult TileWorker::parseAllLayers(std::vector<std::unique_ptr<StyleLayer>> layers_,
-                                           std::unique_ptr<const GeometryTile> geometryTile,
+                                           std::unique_ptr<const GeometryTile> geometryTile_,
                                            PlacementConfig config) {
     // We're doing a fresh parse of the tile, because the underlying data has changed.
     pending.clear();
     placementPending.clear();
     partialParse = false;
+    featureIndex = std::make_unique<FeatureIndex>();
+    geometryTile = std::move(geometryTile_);
 
     // Store the layers for use in redoPlacement.
     layers = std::move(layers_);
@@ -55,7 +57,7 @@ TileParseResult TileWorker::parseAllLayers(std::vector<std::unique_ptr<StyleLaye
         const StyleLayer* layer = i->get();
         if (parsed.find(layer->bucketName()) == parsed.end()) {
             parsed.emplace(layer->bucketName());
-            parseLayer(layer, *geometryTile);
+            parseLayer(layer);
         }
     }
 
@@ -63,6 +65,9 @@ TileParseResult TileWorker::parseAllLayers(std::vector<std::unique_ptr<StyleLaye
 
     if (result.state == TileData::State::parsed) {
         placeLayers(config);
+        featureIndex->loadTree();
+        result.featureIndex = std::move(featureIndex);
+        result.geometryTile = std::move(geometryTile);
     }
 
     return std::move(result);
@@ -94,6 +99,9 @@ TileParseResult TileWorker::parsePendingLayers(const PlacementConfig config) {
 
     if (result.state == TileData::State::parsed) {
         placeLayers(config);
+        featureIndex->loadTree();
+        result.featureIndex = std::move(featureIndex);
+        result.geometryTile = std::move(geometryTile);
     }
 
     return std::move(result);
@@ -122,7 +130,7 @@ void TileWorker::redoPlacement(
     }
 }
 
-void TileWorker::parseLayer(const StyleLayer* layer, const GeometryTile& geometryTile) {
+void TileWorker::parseLayer(const StyleLayer* layer) {
     // Cancel early when parsing.
     if (state == TileData::State::obsolete)
         return;
@@ -139,7 +147,7 @@ void TileWorker::parseLayer(const StyleLayer* layer, const GeometryTile& geometr
         return;
     }
 
-    auto geometryLayer = geometryTile.getLayer(layer->sourceLayer);
+    auto geometryLayer = geometryTile->getLayer(layer->sourceLayer);
     if (!geometryLayer) {
         // The layer specified in the bucket does not exist. Do nothing.
         if (debug::tileParseWarnings) {
@@ -157,6 +165,7 @@ void TileWorker::parseLayer(const StyleLayer* layer, const GeometryTile& geometr
                                      spriteStore,
                                      glyphAtlas,
                                      glyphStore,
+                                     *featureIndex,
                                      mode);
 
     std::unique_ptr<Bucket> bucket = layer->createBucket(parameters);

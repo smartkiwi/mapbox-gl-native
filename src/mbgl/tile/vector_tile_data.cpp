@@ -5,6 +5,7 @@
 #include <mbgl/util/work_request.hpp>
 #include <mbgl/style/style.hpp>
 #include <mbgl/storage/file_source.hpp>
+#include <mbgl/geometry/feature_index.hpp>
 
 namespace mbgl {
 
@@ -77,6 +78,11 @@ VectorTileData::VectorTileData(const TileID& id_,
                 // existing buckets in case we got a refresh parse.
                 buckets = std::move(resultBuckets.buckets);
 
+                if (state == State::parsed) {
+                    featureIndex = std::move(resultBuckets.featureIndex);
+                    geometryTile = std::move(resultBuckets.geometryTile);
+                }
+
             } else {
                 error = result.get<std::exception_ptr>();
                 state = State::obsolete;
@@ -118,6 +124,11 @@ bool VectorTileData::parsePending(std::function<void(std::exception_ptr)> callba
             // Persist the configuration we just placed so that we can later check whether we need to
             // place again in case the configuration has changed.
             placedConfig = config;
+
+            if (state == State::parsed) {
+                featureIndex = std::move(resultBuckets.featureIndex);
+                geometryTile = std::move(resultBuckets.geometryTile);
+            }
 
         } else {
             error = result.get<std::exception_ptr>();
@@ -172,6 +183,14 @@ void VectorTileData::redoPlacement(const std::function<void()>& callback) {
             callback();
         }
     });
+}
+
+void VectorTileData::queryRenderedFeatures(std::unordered_map<std::string, std::vector<std::string>>& result) {
+    if (!featureIndex) {
+        return;
+    }
+
+    featureIndex->query(result);
 }
 
 void VectorTileData::cancel() {

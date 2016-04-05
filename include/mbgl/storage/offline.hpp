@@ -6,7 +6,7 @@
 #include <mbgl/storage/response.hpp>
 
 #include <string>
-#include <vector>
+#include <set>
 #include <functional>
 
 namespace mbgl {
@@ -30,7 +30,7 @@ public:
     OfflineTilePyramidRegionDefinition(const std::string&, const LatLngBounds&, double, double, float);
 
     /* Private */
-    std::vector<TileID> tileCover(SourceType, uint16_t tileSize, const SourceInfo&) const;
+    std::set<CanonicalTileID> tileCover(SourceType, uint16_t tileSize, const SourceInfo&) const;
 
     const std::string styleURL;
     const LatLngBounds bounds;

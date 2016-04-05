@@ -66,11 +66,17 @@ public:
     // new data available that a tile in the "partial" state might be interested at.
     bool update(const StyleUpdateParameters&);
 
+    template <typename ClipIDGenerator>
+    void updateClipIDs(ClipIDGenerator& generator) {
+        generator.update(tiles);
+    }
+
     void updateMatrices(const mat4 &projMatrix, const TransformState &transform);
     void finishRender(Painter &painter);
 
-    std::map<UnwrappedTileID, Renderable> getRenderables() const;
-    const std::vector<Tile*>& getTiles() const;
+    const std::map<UnwrappedTileID, Tile>& getTiles() const;
+
+    TileData* getTileData(const OverscaledTileID&) const;
 
     void setCacheSize(size_t);
     void onLowMemory();
@@ -85,16 +91,10 @@ public:
     bool enabled = false;
 
 private:
-    void tileLoadingCallback(const OverscaledTileID&,
-                             std::exception_ptr,
-                             bool isNewTile);
-    bool handlePartialTile(const TileID&);
-    bool findLoadedChildren(const TileID&, int32_t maxCoveringZoom, std::vector<TileID>& retain);
-    void findLoadedParent(const TileID&, int32_t minCoveringZoom, std::vector<TileID>& retain);
+    void tileLoadingCallback(const OverscaledTileID&, std::exception_ptr, bool isNewTile);
 
-    TileData::State addTile(const TileID&, const StyleUpdateParameters&);
-    TileData::State hasTile(const TileID&);
-    void updateTilePtrs();
+    std::unique_ptr<TileData> createTile(const OverscaledTileID&,
+                                         const StyleUpdateParameters& parameters);
 
 private:
     std::unique_ptr<const SourceInfo> info;
@@ -104,9 +104,8 @@ private:
     // Stores the time when this source was most recently updated.
     TimePoint updated = TimePoint::min();
 
-    std::map<TileID, std::unique_ptr<Tile>> tiles;
-    std::vector<Tile*> tilePtrs;
-    std::map<OverscaledTileID, std::weak_ptr<TileData>> tileDataMap;
+    std::map<UnwrappedTileID, Tile> tiles;
+    std::map<OverscaledTileID, std::unique_ptr<TileData>> tileDataMap;
     TileCache cache;
 
     std::unique_ptr<AsyncRequest> req;

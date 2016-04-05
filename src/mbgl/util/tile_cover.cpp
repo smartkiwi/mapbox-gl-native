@@ -4,6 +4,8 @@
 #include <mbgl/util/interpolate.hpp>
 #include <mbgl/map/transform_state.hpp>
 
+#include <functional>
+
 namespace mbgl {
 
 namespace {
@@ -98,21 +100,19 @@ int32_t coveringZoomLevel(double zoom, SourceType type, uint16_t tileSize) {
     }
 }
 
-std::vector<TileID> tileCover(const TileCoordinate& tl,
-                              const TileCoordinate& tr,
-                              const TileCoordinate& br,
-                              const TileCoordinate& bl,
-                              const TileCoordinate& c,
-                              int32_t z,
-                              int32_t actualZ) {
+std::set<UnwrappedTileID> tileCover(const TileCoordinate& tl,
+                                    const TileCoordinate& tr,
+                                    const TileCoordinate& br,
+                                    const TileCoordinate& bl,
+                                    int32_t z) {
     int32_t tiles = 1 << z;
-    std::forward_list<mbgl::TileID> t;
+    std::set<UnwrappedTileID> t;
 
     auto scanLine = [&](int32_t x0, int32_t x1, int32_t y) {
         int32_t x;
         if (y >= 0 && y <= tiles) {
             for (x = x0; x < x1; ++x) {
-                t.emplace_front(actualZ, x, y, z);
+                t.emplace(z, x, y);
             }
         }
     };
@@ -124,19 +124,10 @@ std::vector<TileID> tileCover(const TileCoordinate& tl,
     scanTriangle(tl, tr, br, 0, tiles, scanLine);
     scanTriangle(br, bl, tl, 0, tiles, scanLine);
 
-    t.sort();
-    t.unique();
-
-    t.sort([&](const TileID& a, const TileID& b) {
-        // Sorts by distance from the box center
-        return std::fabs(a.x - c.x) + std::fabs(a.y - c.y) <
-               std::fabs(b.x - c.x) + std::fabs(b.y - c.y);
-    });
-
-    return std::vector<TileID>(t.begin(), t.end());
+    return t;
 }
 
-std::vector<TileID> tileCover(const LatLngBounds& bounds_, int32_t z, int32_t actualZ) {
+std::set<UnwrappedTileID> tileCover(const LatLngBounds& bounds_, int32_t z) {
     if (bounds_.isEmpty() ||
         bounds_.south() >  util::LATITUDE_MAX ||
         bounds_.north() < -util::LATITUDE_MAX) {
@@ -153,11 +144,10 @@ std::vector<TileID> tileCover(const LatLngBounds& bounds_, int32_t z, int32_t ac
         TileCoordinate::fromLatLng(state, z, bounds.northeast()),
         TileCoordinate::fromLatLng(state, z, bounds.southeast()),
         TileCoordinate::fromLatLng(state, z, bounds.southwest()),
-        TileCoordinate::fromLatLng(state, z, bounds.center()),
-        z, actualZ);
+        z);
 }
 
-std::vector<TileID> tileCover(const TransformState& state, int32_t z, int32_t actualZ) {
+std::set<UnwrappedTileID> tileCover(const TransformState& state, int32_t z) {
     const double w = state.getWidth();
     const double h = state.getHeight();
     return tileCover(
@@ -165,8 +155,7 @@ std::vector<TileID> tileCover(const TransformState& state, int32_t z, int32_t ac
         TileCoordinate::fromScreenCoordinate(state, z, { w,   0   }),
         TileCoordinate::fromScreenCoordinate(state, z, { w,   h   }),
         TileCoordinate::fromScreenCoordinate(state, z, { 0,   h   }),
-        TileCoordinate::fromScreenCoordinate(state, z, { w/2, h/2 }),
-        z, actualZ);
+        z);
 }
 
 } // namespace mbgl

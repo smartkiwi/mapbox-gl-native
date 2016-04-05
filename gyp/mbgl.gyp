@@ -47,6 +47,10 @@
             '<@(libuv_cflags)',
           ],
 
+          'xcode_settings': {
+            'OTHER_CPLUSPLUSFLAGS': [ '<@(libuv_cflags)' ],
+          },
+
           'link_settings': {
             'libraries': [
               '<@(libuv_static_libs)',

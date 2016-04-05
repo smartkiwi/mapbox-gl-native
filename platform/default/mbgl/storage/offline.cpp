@@ -23,7 +23,7 @@ OfflineTilePyramidRegionDefinition::OfflineTilePyramidRegionDefinition(
     }
 }
 
-std::vector<TileID> OfflineTilePyramidRegionDefinition::tileCover(SourceType type, uint16_t tileSize, const SourceInfo& info) const {
+std::set<CanonicalTileID> OfflineTilePyramidRegionDefinition::tileCover(SourceType type, uint16_t tileSize, const SourceInfo& info) const {
     double minZ = std::max<double>(coveringZoomLevel(minZoom, type, tileSize), info.minZoom);
     double maxZ = std::min<double>(coveringZoomLevel(maxZoom, type, tileSize), info.maxZoom);
 
@@ -32,11 +32,11 @@ std::vector<TileID> OfflineTilePyramidRegionDefinition::tileCover(SourceType typ
     assert(minZ < std::numeric_limits<uint8_t>::max());
     assert(maxZ < std::numeric_limits<uint8_t>::max());
 
-    std::vector<TileID> result;
+    std::set<CanonicalTileID> result;
 
     for (uint8_t z = minZ; z <= maxZ; z++) {
-        for (const auto& tile : mbgl::tileCover(bounds, z, z)) {
-            result.push_back(tile.normalized());
+        for (const auto& tile : mbgl::tileCover(bounds, z)) {
+            result.emplace(tile.canonical);
         }
     }
 

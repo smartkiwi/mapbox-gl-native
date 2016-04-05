@@ -33,6 +33,8 @@
 
         'algorithm/covered_by_children.cpp',
         'algorithm/generate_clip_ids.cpp',
+        'algorithm/mock.hpp',
+        'algorithm/update_renderables.cpp',
 
         'util/assert.cpp',
         'util/async_task.cpp',
@@ -62,7 +64,6 @@
 
         'map/map.cpp',
         'map/map_context.cpp',
-        'map/tile.cpp',
         'map/transform.cpp',
 
         'tile/tile_id.cpp',

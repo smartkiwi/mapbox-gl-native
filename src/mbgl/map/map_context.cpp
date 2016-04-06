@@ -315,7 +315,7 @@ std::vector<std::string> MapContext::queryRenderedFeatures(const ScreenCoordinat
         queryGeometry.push_back(TileCoordinate::fromScreenCoordinate(transformState, 0, p));
     }
     if (!style) return {};
-    return style->queryRenderedFeatures(queryGeometry, transformState.getZoom());
+    return style->queryRenderedFeatures(queryGeometry, transformState.getZoom(), transformState.getAngle());
 };
 
 void MapContext::setSourceTileCacheSize(size_t size) {

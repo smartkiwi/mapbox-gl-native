@@ -66,7 +66,8 @@ class FeatureIndex {
         void query(
                 std::unordered_map<std::string, std::vector<std::string>>& result,
                 const GeometryCollection& queryGeometry,
-                double scale,
+                const float bearing,
+                const double scale,
                 const GeometryTile& geometryTile,
                 const Style&);
 

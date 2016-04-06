@@ -37,7 +37,8 @@ public:
     void queryRenderedFeatures(
             std::unordered_map<std::string, std::vector<std::string>>& result,
             const GeometryCollection& queryGeometry,
-            double scale) override;
+            const double bearing,
+            const double scale) override;
 
     void cancel() override;
 

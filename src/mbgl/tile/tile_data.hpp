@@ -87,7 +87,8 @@ public:
     virtual void queryRenderedFeatures(
             std::unordered_map<std::string, std::vector<std::string>>&,
             const GeometryCollection&,
-            double) {
+            const double,
+            const double) {
         return;
     }
 

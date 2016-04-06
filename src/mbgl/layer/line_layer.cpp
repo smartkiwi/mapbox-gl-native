@@ -101,8 +101,34 @@ float LineLayer::getLineWidth() const {
     }
 }
 
-optional<GeometryCollection> offsetLine(const GeometryCollection&, const float) {
-    return {};
+optional<GeometryCollection> offsetLine(const GeometryCollection& rings, const float offset) {
+    if (offset == 0) return {};
+
+    GeometryCollection newRings;
+    vec2<double> zero(0, 0);
+    for (auto& ring : rings) {
+        newRings.emplace_back();
+        auto& newRing = newRings.back();
+
+        for (auto i = ring.begin(); i != ring.end(); i++) {
+            auto& p = *i;
+
+            auto aToB = i == ring.begin() ?
+                zero :
+                util::perp(util::unit(vec2<double>(p - *(i - 1))));
+            auto bToC = i + 1 == ring.end() ?
+                zero :
+                util::perp(util::unit(vec2<double>(*(i + 1) - p)));
+            auto extrude = util::unit(aToB + bToC);
+
+            const double cosHalfAngle = extrude.x * bToC.x + extrude.y * bToC.y;
+            extrude *= (1.0 / cosHalfAngle);
+
+            newRing.push_back((extrude * offset) + p);
+        }
+    }
+
+    return newRings;
 }
 
 float LineLayer::getQueryRadius() const {

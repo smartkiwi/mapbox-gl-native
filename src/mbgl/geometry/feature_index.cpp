@@ -45,12 +45,12 @@ void FeatureIndex::loadTree() {
 void FeatureIndex::query(
         std::unordered_map<std::string, std::vector<std::string>>& result,
         const GeometryCollection& queryGeometry,
-        double scale,
+        const float bearing,
+        const double scale,
         const GeometryTile& geometryTile,
         const Style& style) {
 
     const float pixelsToTileUnits = util::EXTENT / util::tileSize / scale;
-    const float bearing = 0;
 
     float additionalRadius = 0;
     const auto styleLayers = style.getLayers();
@@ -99,7 +99,7 @@ void FeatureIndex::query(
         if (!styleLayer) continue;
 
         auto geometries = getGeometries(*feature);
-        styleLayer->queryIntersectsGeometry(queryGeometry, geometries, bearing, pixelsToTileUnits);
+        if (!styleLayer->queryIntersectsGeometry(queryGeometry, geometries, bearing, pixelsToTileUnits)) continue;
 
         auto& layerResult = result[bucketName];
 
@@ -109,10 +109,27 @@ void FeatureIndex::query(
 }
 
 optional<GeometryCollection> FeatureIndex::translateQueryGeometry(
-        const GeometryCollection&,
-        const std::array<float, 2>&,
-        const TranslateAnchorType,
-        const float,
-        const float) {
-    return {};
+        const GeometryCollection& queryGeometry,
+        const std::array<float, 2>& translate,
+        const TranslateAnchorType anchorType,
+        const float bearing,
+        const float pixelsToTileUnits) {
+
+    if (translate[0] == 0 && translate[1] == 0) return {};
+
+    GeometryCoordinate translateVec(translate[0] * pixelsToTileUnits, translate[1] * pixelsToTileUnits);
+
+    if (anchorType == TranslateAnchorType::Viewport) {
+        translateVec = util::rotate(translateVec, -bearing);
+    }
+
+    GeometryCollection translated;
+    for (auto& ring : queryGeometry) {
+        translated.emplace_back();
+        auto& translatedRing = translated.back();
+        for (auto& p : ring) {
+            translatedRing.push_back(p - translateVec);
+        }
+    }
+    return translated;
 }

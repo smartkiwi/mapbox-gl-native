@@ -487,8 +487,8 @@ AnnotationIDs Map::getPointAnnotationsInBounds(const LatLngBounds& bounds) {
 
 #pragma mark - Feature query api
 
-std::vector<std::string> Map::queryRenderedFeatures() {
-    return context->invokeSync<std::vector<std::string>>(&MapContext::queryRenderedFeatures);
+std::vector<std::string> Map::queryRenderedFeatures(const ScreenCoordinate& point) {
+    return context->invokeSync<std::vector<std::string>>(&MapContext::queryRenderedFeatures, point);
 }
 
 

@@ -24,6 +24,7 @@
 #include <mbgl/util/exception.hpp>
 #include <mbgl/util/string.hpp>
 #include <mbgl/util/mapbox.hpp>
+#include <mbgl/util/tile_coordinate.hpp>
 
 #include <algorithm>
 
@@ -306,9 +307,15 @@ void MapContext::setClasses(const std::vector<std::string>& classNames, const Pr
     updateAsync(Update::Classes);
 }
 
-std::vector<std::string> MapContext::queryRenderedFeatures() {
+std::vector<std::string> MapContext::queryRenderedFeatures(const ScreenCoordinate& point) {
+    std::vector<ScreenCoordinate> queryPoints;
+    queryPoints.push_back(point);
+    std::vector<TileCoordinate> queryGeometry;
+    for (auto& p : queryPoints) {
+        queryGeometry.push_back(TileCoordinate::fromScreenCoordinate(transformState, 0, p));
+    }
     if (!style) return {};
-    return style->queryRenderedFeatures();
+    return style->queryRenderedFeatures(queryGeometry, transformState.getZoom());
 };
 
 void MapContext::setSourceTileCacheSize(size_t size) {

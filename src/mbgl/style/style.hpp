@@ -30,6 +30,7 @@ class StyleLayer;
 class TransformState;
 class Tile;
 class Bucket;
+class TileCoordinate;
 
 namespace gl { class TexturePool; }
 
@@ -109,7 +110,7 @@ public:
 
     RenderData getRenderData() const;
 
-    std::vector<std::string> queryRenderedFeatures();
+    std::vector<std::string> queryRenderedFeatures(const std::vector<TileCoordinate>& queryGeometry, double zoom);
 
     void setSourceTileCacheSize(size_t);
     void onLowMemory();

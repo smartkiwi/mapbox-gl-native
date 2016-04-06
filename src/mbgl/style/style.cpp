@@ -328,10 +328,10 @@ RenderData Style::getRenderData() const {
     return result;
 }
 
-std::vector<std::string> Style::queryRenderedFeatures() {
+std::vector<std::string> Style::queryRenderedFeatures(const std::vector<TileCoordinate>& queryGeometry, double zoom) {
     std::vector<std::unordered_map<std::string, std::vector<std::string>>> sourceResults;
     for (const auto& source : sources) {
-        sourceResults.emplace_back(std::move(source->queryRenderedFeatures()));
+        sourceResults.emplace_back(std::move(source->queryRenderedFeatures(queryGeometry, zoom)));
     }
 
 

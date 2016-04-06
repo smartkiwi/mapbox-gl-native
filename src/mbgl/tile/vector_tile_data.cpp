@@ -185,12 +185,15 @@ void VectorTileData::redoPlacement(const std::function<void()>& callback) {
     });
 }
 
-void VectorTileData::queryRenderedFeatures(std::unordered_map<std::string, std::vector<std::string>>& result) {
-    if (!featureIndex) {
+void VectorTileData::queryRenderedFeatures(
+        std::unordered_map<std::string, std::vector<std::string>>& result,
+        const GeometryCollection& queryGeometry,
+        double scale) {
+    if (!featureIndex || !geometryTile) {
         return;
     }
 
-    featureIndex->query(result);
+    featureIndex->query(result, queryGeometry, scale, *geometryTile);
 }
 
 void VectorTileData::cancel() {

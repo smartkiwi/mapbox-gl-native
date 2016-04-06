@@ -7,6 +7,7 @@
 #include <mbgl/map/tile_id.hpp>
 #include <mbgl/renderer/bucket.hpp>
 #include <mbgl/text/placement_config.hpp>
+#include <mbgl/tile/geometry_tile.hpp>
 
 #include <atomic>
 #include <string>
@@ -83,7 +84,12 @@ public:
     virtual void redoPlacement(PlacementConfig, const std::function<void()>&) {}
     virtual void redoPlacement(const std::function<void()>&) {}
 
-    virtual void queryRenderedFeatures(std::unordered_map<std::string, std::vector<std::string>>&) { return; }
+    virtual void queryRenderedFeatures(
+            std::unordered_map<std::string, std::vector<std::string>>&,
+            const GeometryCollection&,
+            double) {
+        return;
+    }
 
     bool isReady() const {
         return isReadyState(state);

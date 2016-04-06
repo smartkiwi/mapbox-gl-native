@@ -30,11 +30,12 @@ namespace mbgl {
 
 class IndexedSubfeature {
     public:
-        IndexedSubfeature(std::size_t index_, std::string sourceLayerName_, std::string bucketName_) :
-            index(index_), sourceLayerName(sourceLayerName_), bucketName(bucketName_) {};
+        IndexedSubfeature(std::size_t index_, std::string sourceLayerName_, std::string bucketName_, size_t sortIndex_) :
+            index(index_), sourceLayerName(sourceLayerName_), bucketName(bucketName_), sortIndex(sortIndex_) {};
         std::size_t index;
         std::string sourceLayerName;
         std::string bucketName;
+        size_t sortIndex;
 };
 
 namespace bg = boost::geometry;
@@ -52,7 +53,11 @@ class FeatureIndex {
         void insert(const GeometryCollection&, std::size_t index, const std::string& sourceLayerName, const std::string& bucketName);
         void loadTree();
 
-        void query(std::unordered_map<std::string, std::vector<std::string>>& result);
+        void query(
+                std::unordered_map<std::string, std::vector<std::string>>& result,
+                const GeometryCollection& queryGeometry,
+                double scale,
+                const GeometryTile& geometryTile);
 
     private:
         std::vector<FeatureTreeBox> treeBoxes;

@@ -34,7 +34,10 @@ public:
     void redoPlacement(PlacementConfig config, const std::function<void()>&) override;
     void redoPlacement(const std::function<void()>&) override;
 
-    void queryRenderedFeatures(std::unordered_map<std::string, std::vector<std::string>>& result) override;
+    void queryRenderedFeatures(
+            std::unordered_map<std::string, std::vector<std::string>>& result,
+            const GeometryCollection& queryGeometry,
+            double scale) override;
 
     void cancel() override;
 

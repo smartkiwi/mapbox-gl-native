@@ -15,6 +15,7 @@
 #include <mbgl/style/style_layer.hpp>
 #include <mbgl/style/style_update_parameters.hpp>
 #include <mbgl/platform/log.hpp>
+#include <mbgl/util/math.hpp>
 #include <mbgl/util/std.hpp>
 #include <mbgl/util/token.hpp>
 #include <mbgl/util/string.hpp>
@@ -472,11 +473,74 @@ void Source::updateTilePtrs() {
     }
 }
 
-std::unordered_map<std::string, std::vector<std::string>> Source::queryRenderedFeatures() {
+vec2<int16_t> coordinateToTilePoint(const TileID& tileID, const TileCoordinate& coord) {
+    auto zoomedCoord = coord.zoomTo(tileID.sourceZ);
+    return {
+        int16_t(util::clamp<int64_t>((zoomedCoord.x - (tileID.x + tileID.w * std::pow(2, tileID.sourceZ))) * util::EXTENT,
+                    std::numeric_limits<int16_t>::min(),
+                    std::numeric_limits<int16_t>::max())),
+        int16_t(util::clamp<int64_t>((zoomedCoord.y - tileID.y) * util::EXTENT,
+                    std::numeric_limits<int16_t>::min(),
+                    std::numeric_limits<int16_t>::max()))
+    };
+}
+
+struct TileQuery {
+    Tile* tile;
+    GeometryCollection queryGeometry;
+    double scale;
+};
+
+std::unordered_map<std::string, std::vector<std::string>> Source::queryRenderedFeatures(const std::vector<TileCoordinate>& queryGeometry, double zoom) {
+
     std::unordered_map<std::string, std::vector<std::string>> result;
-    for (auto& tilePtr : tilePtrs) {
-        tilePtr->data->queryRenderedFeatures(result);
+
+    double minX = std::numeric_limits<double>::infinity();
+    double minY = std::numeric_limits<double>::infinity();
+    double maxX = -std::numeric_limits<double>::infinity();
+    double maxY = -std::numeric_limits<double>::infinity();
+    double z = queryGeometry[0].z;
+
+    for (auto& c : queryGeometry) {
+        minX = util::min(minX, c.x);
+        minY = util::min(minY, c.y);
+        maxX = util::max(maxX, c.x);
+        maxY = util::max(maxY, c.y);
     }
+
+    std::unordered_map<uint64_t, TileQuery> tileQueries;
+
+    for (auto& tilePtr : tilePtrs) {
+        auto& tile = *tilePtr;
+        uint64_t integerID = tile.id.to_uint64();
+
+        auto tileSpaceBoundsMin = coordinateToTilePoint(tile.id, { minX, minY, z });
+        auto tileSpaceBoundsMax = coordinateToTilePoint(tile.id, { maxX, maxY, z });
+
+        if (tileSpaceBoundsMin.x < util::EXTENT && tileSpaceBoundsMin.y < util::EXTENT &&
+            tileSpaceBoundsMax.x >= 0 && tileSpaceBoundsMax.y >= 0) {
+
+            GeometryCoordinates tileSpaceQueryGeometry;
+
+            for (auto& c : queryGeometry) {
+                tileSpaceQueryGeometry.push_back(coordinateToTilePoint(tile.id, c));
+            }
+
+            auto it = tileQueries.find(integerID);
+            if (it != tileQueries.end()) {
+                it->second.queryGeometry.push_back(std::move(tileSpaceQueryGeometry));
+            } else {
+                tileQueries.emplace(integerID, TileQuery{ tilePtr, { tileSpaceQueryGeometry }, std::pow(2, zoom - tile.id.sourceZ) });
+            }
+        }
+    }
+
+
+    for (auto& it : tileQueries) {
+        auto& tileQuery = std::get<1>(it);
+        tileQuery.tile->data->queryRenderedFeatures(result, tileQuery.queryGeometry, tileQuery.scale);
+    }
+
     return result;
 }
 

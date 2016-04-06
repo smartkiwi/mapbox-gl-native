@@ -193,7 +193,7 @@ void VectorTileData::queryRenderedFeatures(
         return;
     }
 
-    featureIndex->query(result, queryGeometry, scale, *geometryTile);
+    featureIndex->query(result, queryGeometry, scale, *geometryTile, style);
 }
 
 void VectorTileData::cancel() {

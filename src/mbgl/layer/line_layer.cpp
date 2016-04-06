@@ -4,6 +4,8 @@
 #include <mbgl/map/tile_id.hpp>
 #include <mbgl/util/get_geometries.hpp>
 #include <mbgl/geometry/feature_index.hpp>
+#include <mbgl/util/math.hpp>
+#include <mbgl/util/intersection_tests.hpp>
 
 namespace mbgl {
 
@@ -88,6 +90,42 @@ std::unique_ptr<Bucket> LineLayer::createBucket(StyleBucketParameters& parameter
     });
 
     return std::move(bucket);
+}
+
+
+float LineLayer::getLineWidth() const {
+    if (paint.gapWidth > 0) {
+        return paint.gapWidth + 2 * paint.width;
+    } else {
+        return paint.width;
+    }
+}
+
+optional<GeometryCollection> offsetLine(const GeometryCollection&, const float) {
+    return {};
+}
+
+float LineLayer::getQueryRadius() const {
+    const std::array<float, 2>& translate = paint.translate;
+    return getLineWidth() / 2.0 + std::abs(paint.offset) + util::length(translate[0], translate[1]);
+}
+
+bool LineLayer::queryIntersectsGeometry(
+        const GeometryCollection& queryGeometry,
+        const GeometryCollection& geometry,
+        const float bearing,
+        const float pixelsToTileUnits) const {
+
+    const float halfWidth = getLineWidth() / 2.0 * pixelsToTileUnits;
+
+    auto translatedQueryGeometry = FeatureIndex::translateQueryGeometry(
+            queryGeometry, paint.translate, paint.translateAnchor, bearing, pixelsToTileUnits);
+    auto offsetGeometry = offsetLine(geometry, paint.offset * pixelsToTileUnits);
+
+    return util::multiPolygonIntersectsBufferedMultiLine(
+            translatedQueryGeometry.value_or(queryGeometry),
+            offsetGeometry.value_or(geometry),
+            halfWidth);
 }
 
 } // namespace mbgl

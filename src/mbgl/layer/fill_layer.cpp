@@ -3,6 +3,8 @@
 #include <mbgl/renderer/fill_bucket.hpp>
 #include <mbgl/util/get_geometries.hpp>
 #include <mbgl/geometry/feature_index.hpp>
+#include <mbgl/util/math.hpp>
+#include <mbgl/util/intersection_tests.hpp>
 
 namespace mbgl {
 
@@ -67,6 +69,23 @@ std::unique_ptr<Bucket> FillLayer::createBucket(StyleBucketParameters& parameter
     });
 
     return std::move(bucket);
+}
+
+float FillLayer::getQueryRadius() const {
+    const std::array<float, 2>& translate = paint.translate;
+    return util::length(translate[0], translate[1]);
+}
+
+bool FillLayer::queryIntersectsGeometry(
+        const GeometryCollection& queryGeometry,
+        const GeometryCollection& geometry,
+        const float bearing,
+        const float pixelsToTileUnits) const {
+
+    auto translatedQueryGeometry = FeatureIndex::translateQueryGeometry(
+            queryGeometry, paint.translate, paint.translateAnchor, bearing, pixelsToTileUnits);
+
+    return util::multiPolygonIntersectsMultiPolygon(translatedQueryGeometry.value_or(queryGeometry), geometry);
 }
 
 } // namespace mbgl

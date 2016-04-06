@@ -3,6 +3,8 @@
 #include <mbgl/renderer/circle_bucket.hpp>
 #include <mbgl/util/get_geometries.hpp>
 #include <mbgl/geometry/feature_index.hpp>
+#include <mbgl/util/math.hpp>
+#include <mbgl/util/intersection_tests.hpp>
 
 namespace mbgl {
 
@@ -54,6 +56,26 @@ std::unique_ptr<Bucket> CircleLayer::createBucket(StyleBucketParameters& paramet
     });
 
     return std::move(bucket);
+}
+
+float CircleLayer::getQueryRadius() const {
+    const std::array<float, 2>& translate = paint.translate;
+    return paint.radius + util::length(translate[0], translate[1]);
+}
+
+bool CircleLayer::queryIntersectsGeometry(
+        const GeometryCollection& queryGeometry,
+        const GeometryCollection& geometry,
+        const float bearing,
+        const float pixelsToTileUnits) const {                
+
+    auto translatedQueryGeometry = FeatureIndex::translateQueryGeometry(
+            queryGeometry, paint.translate, paint.translateAnchor, bearing, pixelsToTileUnits);
+
+    auto circleRadius = paint.radius * pixelsToTileUnits;
+
+    return util::multiPolygonIntersectsBufferedMultiPoint(
+            translatedQueryGeometry.value_or(queryGeometry), geometry, circleRadius);
 }
 
 } // namespace mbgl

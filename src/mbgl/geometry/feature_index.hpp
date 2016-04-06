@@ -28,6 +28,9 @@
 
 namespace mbgl {
 
+class Style;
+enum class TranslateAnchorType : bool;
+
 class IndexedSubfeature {
     public:
         IndexedSubfeature(std::size_t index_, std::string sourceLayerName_, std::string bucketName_, size_t sortIndex_) :
@@ -53,11 +56,19 @@ class FeatureIndex {
         void insert(const GeometryCollection&, std::size_t index, const std::string& sourceLayerName, const std::string& bucketName);
         void loadTree();
 
+        static optional<GeometryCollection> translateQueryGeometry(
+                const GeometryCollection& queryGeometry,
+                const std::array<float, 2>& translate,
+                const TranslateAnchorType,
+                const float bearing,
+                const float pixelsToTileUnits);
+
         void query(
                 std::unordered_map<std::string, std::vector<std::string>>& result,
                 const GeometryCollection& queryGeometry,
                 double scale,
-                const GeometryTile& geometryTile);
+                const GeometryTile& geometryTile,
+                const Style&);
 
     private:
         std::vector<FeatureTreeBox> treeBoxes;

@@ -44,9 +44,9 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The map will display the user's location.</string>
 	<key>UILaunchStoryboardName</key>
-	<string>Default</string>
+	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
-	<string>Storyboard</string>
+	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

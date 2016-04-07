@@ -307,7 +307,7 @@ void MapContext::setClasses(const std::vector<std::string>& classNames, const Pr
     updateAsync(Update::Classes);
 }
 
-std::vector<std::string> MapContext::queryRenderedFeatures(const ScreenCoordinate& point) {
+std::vector<std::string> MapContext::queryRenderedFeatures(const ScreenCoordinate& point, const optional<std::vector<std::string>>& layerIDs) {
     std::vector<ScreenCoordinate> queryPoints;
     queryPoints.push_back(point);
     std::vector<TileCoordinate> queryGeometry;
@@ -315,7 +315,7 @@ std::vector<std::string> MapContext::queryRenderedFeatures(const ScreenCoordinat
         queryGeometry.push_back(TileCoordinate::fromScreenCoordinate(transformState, 0, p));
     }
     if (!style) return {};
-    return style->queryRenderedFeatures(queryGeometry, transformState.getZoom(), transformState.getAngle());
+    return style->queryRenderedFeatures(queryGeometry, transformState.getZoom(), transformState.getAngle(), layerIDs);
 };
 
 void MapContext::setSourceTileCacheSize(size_t size) {

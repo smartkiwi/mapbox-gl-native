@@ -110,7 +110,11 @@ public:
 
     RenderData getRenderData() const;
 
-    std::vector<std::string> queryRenderedFeatures(const std::vector<TileCoordinate>& queryGeometry, const double zoom, const double bearing);
+    std::vector<std::string> queryRenderedFeatures(
+            const std::vector<TileCoordinate>& queryGeometry,
+            const double zoom,
+            const double bearing,
+            const optional<std::vector<std::string>>& layerIDs);
 
     void setSourceTileCacheSize(size_t);
     void onLowMemory();

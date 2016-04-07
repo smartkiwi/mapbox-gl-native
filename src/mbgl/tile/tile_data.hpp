@@ -88,7 +88,8 @@ public:
             std::unordered_map<std::string, std::vector<std::string>>&,
             const GeometryCollection&,
             const double,
-            const double) {
+            const double,
+            const optional<std::vector<std::string>>&) {
         return;
     }
 

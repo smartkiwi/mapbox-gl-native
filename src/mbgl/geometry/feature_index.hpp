@@ -56,6 +56,15 @@ class FeatureIndex {
         void insert(const GeometryCollection&, std::size_t index, const std::string& sourceLayerName, const std::string& bucketName);
         void loadTree();
 
+        void query(
+                std::unordered_map<std::string, std::vector<std::string>>& result,
+                const GeometryCollection& queryGeometry,
+                const float bearing,
+                const double scale,
+                const optional<std::vector<std::string>>& layerIDs,
+                const GeometryTile& geometryTile,
+                const Style&);
+
         static optional<GeometryCollection> translateQueryGeometry(
                 const GeometryCollection& queryGeometry,
                 const std::array<float, 2>& translate,
@@ -63,17 +72,13 @@ class FeatureIndex {
                 const float bearing,
                 const float pixelsToTileUnits);
 
-        void query(
-                std::unordered_map<std::string, std::vector<std::string>>& result,
-                const GeometryCollection& queryGeometry,
-                const float bearing,
-                const double scale,
-                const GeometryTile& geometryTile,
-                const Style&);
+        void addBucketLayerName(const std::string &bucketName, const std::string &layerName);
 
     private:
         std::vector<FeatureTreeBox> treeBoxes;
         FeatureTree tree;
+
+        std::unordered_map<std::string,std::vector<std::string>> bucketLayerIDs;
 
 };
 }

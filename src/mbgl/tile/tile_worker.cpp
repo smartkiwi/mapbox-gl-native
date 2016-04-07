@@ -59,6 +59,7 @@ TileParseResult TileWorker::parseAllLayers(std::vector<std::unique_ptr<StyleLaye
             parsed.emplace(layer->bucketName());
             parseLayer(layer);
         }
+        featureIndex->addBucketLayerName(layer->bucketName(), layer->id);
     }
 
     result.state = pending.empty() ? TileData::State::parsed : TileData::State::partial;

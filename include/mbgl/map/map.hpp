@@ -175,7 +175,7 @@ public:
     void removeCustomLayer(const std::string& id);
 
     // Feature queries
-    std::vector<std::string> queryRenderedFeatures(const ScreenCoordinate&);
+    std::vector<std::string> queryRenderedFeatures(const ScreenCoordinate&, const optional<std::vector<std::string>>& layerIDs = {});
 
     // Memory
     void setSourceTileCacheSize(size_t);

@@ -42,11 +42,19 @@ void FeatureIndex::loadTree() {
     tree.insert(treeBoxes.begin(), treeBoxes.end());
 }
 
+bool vectorsIntersect(const std::vector<std::string>& vectorA, const std::vector<std::string>& vectorB) {
+    for (auto& a : vectorA) {
+        if (std::find(vectorB.begin(), vectorB.end(), a) != vectorB.end()) return true;
+    }
+    return false;
+}
+
 void FeatureIndex::query(
         std::unordered_map<std::string, std::vector<std::string>>& result,
         const GeometryCollection& queryGeometry,
         const float bearing,
         const double scale,
+        const optional<std::vector<std::string>>& filterLayerIDs,
         const GeometryTile& geometryTile,
         const Style& style) {
 
@@ -88,22 +96,32 @@ void FeatureIndex::query(
     for (auto& matchingBox : matchingBoxes) {
         auto& indexedFeature = std::get<1>(matchingBox);
 
+        auto& layerIDs = bucketLayerIDs.at(indexedFeature.bucketName);
+
+        if (filterLayerIDs && !vectorsIntersect(layerIDs, filterLayerIDs.value())) continue;
+
         auto sourceLayer = geometryTile.getLayer(indexedFeature.sourceLayerName);
         assert(sourceLayer);
         auto feature = sourceLayer->getFeature(indexedFeature.index);
         assert(feature);
 
-        auto& bucketName = indexedFeature.bucketName;
+        for (auto& layerID : layerIDs) {
 
-        auto styleLayer = style.getLayer(bucketName);
-        if (!styleLayer) continue;
+            if (filterLayerIDs) {
+                auto& filterIDs = filterLayerIDs.value();
+                if (std::find(filterIDs.begin(), filterIDs.end(), layerID) == filterIDs.end()) continue;
+            }
 
-        auto geometries = getGeometries(*feature);
-        if (!styleLayer->queryIntersectsGeometry(queryGeometry, geometries, bearing, pixelsToTileUnits)) continue;
+            auto styleLayer = style.getLayer(layerID);
+            if (!styleLayer) continue;
 
-        auto& layerResult = result[bucketName];
+            auto geometries = getGeometries(*feature);
+            if (!styleLayer->queryIntersectsGeometry(queryGeometry, geometries, bearing, pixelsToTileUnits)) continue;
 
-        layerResult.push_back(indexedFeature.sourceLayerName);
+            auto& layerResult = result[layerID];
+
+            layerResult.push_back(layerID);
+        }
     }
 
 }
@@ -132,4 +150,9 @@ optional<GeometryCollection> FeatureIndex::translateQueryGeometry(
         }
     }
     return translated;
+}
+
+void FeatureIndex::addBucketLayerName(const std::string& bucketName, const std::string& layerID) {
+    auto& layerIDs = bucketLayerIDs[bucketName];
+    layerIDs.push_back(layerID);
 }

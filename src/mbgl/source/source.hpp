@@ -75,7 +75,8 @@ public:
     std::unordered_map<std::string, std::vector<std::string>> queryRenderedFeatures(
             const std::vector<TileCoordinate>& queryGeometry,
             const double zoom,
-            const double bearing);
+            const double bearing,
+            const optional<std::vector<std::string>>& layerIDs);
 
     void setCacheSize(size_t);
     void onLowMemory();

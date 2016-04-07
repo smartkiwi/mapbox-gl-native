@@ -5,6 +5,9 @@
       location = "container:app/iosapp.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:test/ios-tests.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:app/../../../build/ios-all/gyp/ios.xcodeproj">
    </FileRef>
 </Workspace>
